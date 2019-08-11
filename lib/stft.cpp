@@ -1,3 +1,4 @@
+#include "libsndalign.h"
 #include <complex>
 #include "Eigen/Dense"
 #include "unsupported/Eigen/FFT"
@@ -12,19 +13,19 @@
  *
  * @return         A matrix where each column is a frame of the STFT.
  */
-Eigen::MatrixXcd stft(
-	const Eigen::VectorXd& input,
-	size_t wsize,
-	size_t overlap
+Eigen::Matrix<std::complex<pcm_t>, Eigen::Dynamic, Eigen::Dynamic> stft(
+	const Eigen::Matrix<pcm_t, Eigen::Dynamic, 1>& input,
+	index_t wsize,
+	index_t overlap
 ) {
 
-	size_t nOfFrames = (input.size() - overlap) / (wsize - overlap);
-	Eigen::FFT<double> fft;
-	Eigen::VectorXd tmp(wsize);
-	Eigen::MatrixXcd output(wsize, nOfFrames);
+	index_t nOfFrames = (input.size() - overlap) / (wsize - overlap);
+	Eigen::FFT<pcm_t> fft;
+	Eigen::Matrix<pcm_t, Eigen::Dynamic, 1> tmp(wsize);
+	Eigen::Matrix<std::complex<pcm_t>, Eigen::Dynamic, Eigen::Dynamic> output(wsize, nOfFrames);
 
 
-	for (size_t i = 0; i < nOfFrames; i++) {
+	for (index_t i = 0; i < nOfFrames; i++) {
 
 		tmp = input.block(i * (wsize - overlap), 0, wsize, 1);
 		output.col(i) = fft.fwd(tmp);

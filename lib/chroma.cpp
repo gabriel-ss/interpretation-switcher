@@ -1,3 +1,4 @@
+#include "libsndalign.h"
 #include "Eigen/Dense"
 #include <cmath>
 
@@ -19,18 +20,18 @@
  * @param epsilon     The smallest norm that a chroma vector needs to have to
  * not be replaced by a stub one.
  */
-Eigen::Matrix<double, 12, Eigen::Dynamic> chroma(
-	const Eigen::MatrixXcd& stft,
-	double fs,
-	unsigned wsize,
-	double gamma,
-	double epsilon
+Eigen::Matrix<pcm_t, 12, Eigen::Dynamic> chroma(
+	const Eigen::Matrix<std::complex<pcm_t>, Eigen::Dynamic, Eigen::Dynamic>& stft,
+	pcm_t fs,
+	index_t wsize,
+	pcm_t gamma,
+	pcm_t epsilon
 ) {
 
 	// The number of chroma vectors is defined by the frames in the STFT
-	unsigned nOfFrames = stft.cols();
+	index_t nOfFrames = stft.cols();
 
-	Eigen::Matrix<double, 128, Eigen::Dynamic> pitchSpectrum(128, nOfFrames);
+	Eigen::Matrix<pcm_t, 128, Eigen::Dynamic> pitchSpectrum(128, nOfFrames);
 
 
 	Eigen::Matrix<Eigen::Index, 129, 1> pitchStarts;
@@ -60,8 +61,8 @@ Eigen::Matrix<double, 12, Eigen::Dynamic> chroma(
 	}
 
 
-	Eigen::Matrix<double, 12, Eigen::Dynamic> chroma =
-		Eigen::MatrixXd::Zero(12, nOfFrames);
+	Eigen::Matrix<pcm_t, 12, Eigen::Dynamic> chroma =
+		Eigen::Matrix<pcm_t, Eigen::Dynamic, Eigen::Dynamic>::Zero(12, nOfFrames);
 
 
 	for (Eigen::Index n = 0; n < nOfFrames; n++) {
@@ -77,13 +78,13 @@ Eigen::Matrix<double, 12, Eigen::Dynamic> chroma(
 
 	// Compresses the chroma vectors
 	chroma = (1 + gamma * chroma.array()).log10();
-	Eigen::Matrix<double, 12, 1> stubFeature =
-		Eigen::Matrix<double, 12, 1>::Ones() / sqrt(12);
+	Eigen::Matrix<pcm_t, 12, 1> stubFeature =
+		Eigen::Matrix<pcm_t, 12, 1>::Ones() / sqrt(12);
 
 	// Evaluates the norm of each chroma vector...
 	for (Eigen::Index i = 0; i < chroma.cols(); i++) {
 
-		double norm;
+		pcm_t norm;
 		// ...and if it's smaller than the epsilon parameter normalizes the vector
 		if ((norm = chroma.col(i).norm()) > epsilon)
 			chroma.col(i) /= norm;

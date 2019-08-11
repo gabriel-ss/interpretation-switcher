@@ -1,9 +1,16 @@
 #pragma once
-#include "stddef.h"
+
+#ifndef pcm_t
+#define pcm_t double
+#endif
+#ifndef index_t
+#define index_t unsigned long
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 
 /**
@@ -33,17 +40,17 @@ extern "C" {
  * sequence. Both paths have the same length, therefore the first one will be
  * in the first half of the array and the second in the second half.
  */
-size_t* soundAlign(
-	double* signal1,
-	size_t length1,
-	double* signal2,
-	size_t length2,
-	double fs,
-	size_t wsize,
-	size_t overlap,
-	double gamma,
-	double epsilon,
-	size_t* const alignmentLength
+index_t* soundAlign(
+	pcm_t* signal1,
+	index_t length1,
+	pcm_t* signal2,
+	index_t length2,
+	pcm_t fs,
+	index_t wsize,
+	index_t overlap,
+	pcm_t gamma,
+	pcm_t epsilon,
+	index_t* const alignmentLength
 );
 
 
