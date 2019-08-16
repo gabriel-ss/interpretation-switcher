@@ -1,6 +1,7 @@
 import {app, BrowserWindow, ipcMain, dialog} from "electron";
 import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-installer";
 import {enableLiveReload} from "electron-compile";
+import soundAlign from "./track-aligner/trackAligner";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -76,3 +77,25 @@ app.on("activate", () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+
+let masterTrack = "";
+
+ipcMain.on("trackAdd", async(event, path) => {
+
+	if (!masterTrack) {
+
+		masterTrack = path;
+
+		console.log("master added");
+		return;
+
+
+	}
+
+	const alignment = await soundAlign(masterTrack, path);
+
+	event.sender.send("trackAligned", alignment);
+	console.log("trackAligned");
+
+});

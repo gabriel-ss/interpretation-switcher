@@ -48,6 +48,9 @@
 		}
 	},
 	"dependencies": {
+		"@material-ui/core": "^3.9.3",
+		"@material-ui/icons": "^3.0.2",
+		"@material-ui/lab": "^3.0.0-alpha.30",
 		"@types/electron-devtools-installer": "^2.0.2",
 		"@types/howler": "^2.1.1",
 		"@types/react": "16.8.10",
