@@ -99,3 +99,5 @@ ipcMain.on("trackAdd", async(event, path) => {
 	console.log("trackAligned");
 
 });
+
+ipcMain.on("masterTrackReset", () => (masterTrack = ""));

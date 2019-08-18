@@ -91,15 +91,21 @@ export class App extends React.Component<{}, State> {
 
 	private removeTrack = (track: number) => (): void => {
 
-		if (this.state.isPlaying &&
-			(track === this.state.selectedTrack)) {
+		const {isPlaying, selectedTrack, trackList} = this.state;
+
+		if (isPlaying && track === selectedTrack) {
 
 			this.toggleReproduction();
-			this.setSelectedTrack(0);
+			this.setState({selectedTrack: 0});
 
 		}
 
-		this.setState({trackList: [...this.state.trackList.splice(track, 1)]});
+		if (trackList.length)
+			ipcRenderer.send("masterTrackReset");
+
+		this.setState({trackList: trackList.filter(
+			(_item, trackNumber) => track !== trackNumber
+		)});
 
 	}
 
