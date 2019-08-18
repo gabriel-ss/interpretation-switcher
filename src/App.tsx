@@ -37,6 +37,8 @@ export class App extends React.Component<{}, State> {
 				alignment.map((segment: Uint8Array) =>
 					new Uint32Array(segment.buffer));
 
+			this.syncTracks();
+
 		});
 
 	}
@@ -46,8 +48,12 @@ export class App extends React.Component<{}, State> {
 
 		setInterval(() => {
 
-			this.syncTracks();
-			this.setState({trackList: [...this.state.trackList]});
+			if (this.state.isPlaying) {
+
+				this.syncTracks();
+				this.setState({trackList: [...this.state.trackList]});
+
+			}
 
 		}, 250);
 
@@ -97,6 +103,8 @@ export class App extends React.Component<{}, State> {
 	private setSelectedTrack = (track: number) => (): void => {
 
 		const currentTrack = this.state.trackList[this.state.selectedTrack];
+
+		this.syncTracks();
 
 		if (this.state.isPlaying) {
 
