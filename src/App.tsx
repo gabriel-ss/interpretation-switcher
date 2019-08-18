@@ -74,7 +74,10 @@ export class App extends React.Component<{}, State> {
 
 	private addTrack = (): void => {
 
-		const [path] = dialog.showOpenDialog({properties: ["openFile"]}) || [null];
+		const [path] = dialog.showOpenDialog({
+			properties: ["openFile"],
+			filters: [{name: "Audio Files", extensions: ["mp3", "wav"]}],
+		}) || [null];
 
 		if (!path) return;
 
