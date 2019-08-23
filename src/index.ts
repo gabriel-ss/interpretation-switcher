@@ -81,23 +81,26 @@ app.on("activate", () => {
 
 let masterTrack = "";
 
-ipcMain.on("trackAdd", async(event, path) => {
+ipcMain.on("trackAdd",
+	async(event, path, windowSize, windowOverlap, gamma, epsilon) => {
 
-	if (!masterTrack) {
+		if (!masterTrack) {
 
-		masterTrack = path;
+			masterTrack = path;
 
-		console.log("master added");
-		return;
+			console.log("master added");
 
+			return;
 
-	}
+		}
 
-	const alignment = await soundAlign(masterTrack, path);
+		const alignment = await soundAlign(
+			masterTrack, path, windowSize, windowOverlap, gamma, epsilon
+		);
 
-	event.sender.send("trackAligned", alignment);
-	console.log("trackAligned");
+		event.sender.send("trackAligned", alignment);
+		console.log("trackAligned");
 
-});
+	});
 
 ipcMain.on("masterTrackReset", () => (masterTrack = ""));

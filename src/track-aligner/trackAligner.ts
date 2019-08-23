@@ -5,21 +5,28 @@ import decode from "./decoder";
 const soundAlign = (() => {
 
 	let cachedPath = "";
-	let cachedSignal = new Float32Array();
+	let cachedSignal = new ArrayBuffer(0);
 
 	const soundAlign =
-		async(path1: string, path2: string): Promise<Uint32Array[]> => {
+		async(
+			path1: string,
+			path2: string,
+			windowSize: number,
+			windowOverlap: number,
+			gamma: number,
+			epsilon: number
+		): Promise<Uint32Array[]> => {
 
 			if (cachedPath !== path1) {
 
 				cachedPath = path1;
-				cachedSignal = (await decode(path1)).getChannelData(0);
+				cachedSignal = (await decode(path1)).getChannelData(0).buffer;
 
 			}
 
-			const signal = (await decode(path2)).getChannelData(0);
+			const signal = (await decode(path2)).getChannelData(0).buffer;
 			const result = sndAlign(
-				cachedSignal.buffer, signal.buffer, 44100, 4096, 0, 0.1, 0.1
+				cachedSignal, signal, 44100, windowSize, windowOverlap, gamma, epsilon
 			);
 
 			const secondTrackPosition = result.byteLength / 2;

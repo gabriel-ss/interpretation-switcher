@@ -6,8 +6,6 @@ import {Fab} from "@material-ui/core";
 import {Add} from "@material-ui/icons";
 import {ipcRenderer} from "electron";
 const {dialog} = require("electron").remote.require("electron");
-const WINDOW_OVERLAP = 0;
-const WINDOW_SIZE = 4096;
 const SAMPLE_RATE = 44100;
 
 
@@ -16,6 +14,10 @@ interface State {
 	trackList: Track[];
 	selectedTrack: number;
 	isPlaying: boolean;
+	windowSize: number;
+	windowOverlap: number;
+	gamma: number;
+	epsilon: number;
 
 }
 
@@ -25,6 +27,10 @@ export class App extends React.Component<{}, State> {
 		trackList: [] as Track[],
 		selectedTrack: 0,
 		isPlaying: false,
+		windowSize: 4096,
+		windowOverlap: 0,
+		gamma: 0.1,
+		epsilon: 0.1,
 	}
 
 
@@ -81,7 +87,11 @@ export class App extends React.Component<{}, State> {
 
 		if (!path) return;
 
-		ipcRenderer.send("trackAdd", path);
+		const {windowSize, windowOverlap, gamma, epsilon} = this.state;
+
+		ipcRenderer.send(
+			"trackAdd", path, windowSize, windowOverlap, gamma, epsilon
+		);
 
 		const track = new TrackImplementation(path);
 
@@ -142,17 +152,19 @@ export class App extends React.Component<{}, State> {
 
 	public syncTracks(trackNumber?: number): void {
 
-		const referenceTrack = trackNumber || trackNumber === 0
-			? trackNumber : this.state.selectedTrack;
+		const {windowSize, windowOverlap, selectedTrack, trackList} = this.state;
 
-		const currentTrack = this.state.trackList[referenceTrack];
+		const referenceTrack = trackNumber || trackNumber === 0
+			? trackNumber : selectedTrack;
+
+		const currentTrack = trackList[referenceTrack];
 
 		if (!currentTrack) return;
 
 		const {currentPosition, alignment} = currentTrack;
 		// Evaluate the window where the current sample is
 		const currentWindow = Math.floor(
-			currentPosition * SAMPLE_RATE / (WINDOW_SIZE - WINDOW_OVERLAP)
+			currentPosition * SAMPLE_RATE / (windowSize - windowOverlap)
 		);
 
 		let referenceWindow: number;
@@ -168,7 +180,7 @@ export class App extends React.Component<{}, State> {
 			referenceWindow = currentWindow;
 
 
-		this.state.trackList.filter(track => track !== currentTrack)
+		trackList.filter(track => track !== currentTrack)
 			.forEach(track => {
 
 				let alignedWindow: number;
@@ -184,11 +196,23 @@ export class App extends React.Component<{}, State> {
 					alignedWindow = referenceWindow;
 
 				track.currentPosition =
-				alignedWindow * (WINDOW_SIZE - WINDOW_OVERLAP) / SAMPLE_RATE;
+				alignedWindow * (windowSize - windowOverlap) / SAMPLE_RATE;
 
 			});
 
 	}
+
+	public setWindowSize = (windowSize: number) =>
+		this.setState({windowSize})
+
+	public setWindowOverlap = (windowOverlap: number) =>
+		this.setState({windowOverlap})
+
+	public setGamma = (gamma: number) =>
+		this.setState({gamma})
+
+	public setEpsilon = (epsilon: number) =>
+		this.setState({epsilon})
 
 
 	public render(): JSX.Element {
@@ -206,7 +230,16 @@ export class App extends React.Component<{}, State> {
 					/>
 					<PlayerController
 						isPlaying={this.state.isPlaying}
+						isLocked={Boolean(this.state.trackList.length)}
 						toggleReproduction={this.toggleReproduction}
+						windowSize={this.state.windowSize}
+						windowOverlap={this.state.windowOverlap}
+						gamma={this.state.gamma}
+						epsilon={this.state.epsilon}
+						setWindowSize={this.setWindowSize}
+						setWindowOverlap={this.setWindowOverlap}
+						setGamma={this.setGamma}
+						setEpsilon={this.setEpsilon}
 					/>
 					<Fab
 						style={buttonStyle}
