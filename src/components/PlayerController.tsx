@@ -108,8 +108,7 @@ class PlayerController extends React.Component<Props> {
 
 const style = {
 
-	top: "auto",
-	bottom: "0px",
+	position: "static" as any,
 
 };
 

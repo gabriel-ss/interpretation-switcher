@@ -228,25 +228,27 @@ export class App extends React.Component<{}, State> {
 						setSelectedTrack={this.setSelectedTrack}
 						removeTrack={this.removeTrack}
 					/>
-					<PlayerController
-						isPlaying={this.state.isPlaying}
-						isLocked={Boolean(this.state.trackList.length)}
-						toggleReproduction={this.toggleReproduction}
-						windowSize={this.state.windowSize}
-						windowOverlap={this.state.windowOverlap}
-						gamma={this.state.gamma}
-						epsilon={this.state.epsilon}
-						setWindowSize={this.setWindowSize}
-						setWindowOverlap={this.setWindowOverlap}
-						setGamma={this.setGamma}
-						setEpsilon={this.setEpsilon}
-					/>
-					<Fab
-						style={buttonStyle}
-						onClick={this.addTrack}
-					>
-						<Add/>
-					</Fab>
+					<div style={playerBarStyle}>
+						<Fab
+							style={buttonStyle}
+							onClick={this.addTrack}
+						>
+							<Add/>
+						</Fab>
+						<PlayerController
+							isPlaying={this.state.isPlaying}
+							isLocked={Boolean(this.state.trackList.length)}
+							toggleReproduction={this.toggleReproduction}
+							windowSize={this.state.windowSize}
+							windowOverlap={this.state.windowOverlap}
+							gamma={this.state.gamma}
+							epsilon={this.state.epsilon}
+							setWindowSize={this.setWindowSize}
+							setWindowOverlap={this.setWindowOverlap}
+							setGamma={this.setGamma}
+							setEpsilon={this.setEpsilon}
+						/>
+					</div>
 				</div>
 			</React.Fragment>
 		);
@@ -268,10 +270,19 @@ const appStyle = {
 
 };
 
-const buttonStyle = {
+const playerBarStyle = {
 
 	position: "absolute" as any,
-	bottom: 96,
+	textAlign: "end" as any,
+	bottom: 0,
+	width: "100%",
+
+};
+
+const buttonStyle = {
+
+	position: "relative" as any,
+	bottom: 40,
 	right: 40,
 
 };
