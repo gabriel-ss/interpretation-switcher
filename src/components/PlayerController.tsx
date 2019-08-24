@@ -1,5 +1,5 @@
 import * as React from "react";
-import {AppBar, IconButton, Toolbar, TextField} from "@material-ui/core";
+import {AppBar, IconButton, Toolbar, TextField, Tooltip} from "@material-ui/core";
 import {PlayArrow, Pause} from "@material-ui/icons";
 
 
@@ -33,44 +33,69 @@ class PlayerController extends React.Component<Props> {
 						{this.props.isPlaying ? <Pause/> : <PlayArrow/>}
 					</IconButton>
 					<div style={{margin: "auto"}}>
-						<TextField
-							type="number"
-							label={"Window Size"}
-							disabled={this.props.isLocked}
-							value={this.props.windowSize}
-							onChange={event => this.props.setWindowSize(
-								Number(event.target.value) || this.props.windowSize
-							)}
-						/>
-						<TextField
-							type="number"
-							label={"Window Overlap"}
-							disabled={this.props.isLocked}
-							value={this.props.windowOverlap}
-							onChange={event => this.props.setWindowOverlap(
-								Number(event.target.value) || this.props.windowOverlap
-							)}
-						/>
-						<TextField
-							type="number"
-							label={"Gamma"}
-							disabled={this.props.isLocked}
-							value={this.props.gamma}
-							inputProps={{step: 0.1}}
-							onChange={event => this.props.setGamma(
-								Number(event.target.value) || this.props.gamma
-							)}
-						/>
-						<TextField
-							type="number"
-							label={"Epsilon"}
-							disabled={this.props.isLocked}
-							value={this.props.epsilon}
-							inputProps={{step: 0.1}}
-							onChange={event => this.props.setEpsilon(
-								Number(event.target.value) || this.props.epsilon
-							)}
-						/>
+						<Tooltip
+							enterDelay={1000}
+							title="The window size in samples"
+						>
+							<TextField
+								type="number"
+								label={"Window Size"}
+								disabled={this.props.isLocked}
+								value={this.props.windowSize}
+								onChange={event => this.props.setWindowSize(
+									Number(event.target.value) ||
+										this.props.windowSize
+								)}
+							/>
+						</Tooltip>
+						<Tooltip
+							enterDelay={1000}
+							title="The overlap between two adjacent windows in samples"
+						>
+							<TextField
+								type="number"
+								label={"Window Overlap"}
+								disabled={this.props.isLocked}
+								value={this.props.windowOverlap}
+								onChange={event => this.props.setWindowOverlap(
+									Number(event.target.value) ||
+										this.props.windowOverlap
+								)}
+							/>
+						</Tooltip>
+						<Tooltip
+							enterDelay={1000}
+							title="The compression factor used in the chroma features extraction"
+						>
+							<TextField
+								type="number"
+								label={"Gamma"}
+								disabled={this.props.isLocked}
+								value={this.props.gamma}
+								inputProps={{step: 0.1}}
+								onChange={event => this.props.setGamma(
+									Number(event.target.value) ||
+										this.props.gamma
+								)}
+							/>
+						</Tooltip>
+						<Tooltip
+							enterDelay={1000}
+							title="The threshold that defines the minimum length of a vector to be considered relevant to the melody. Vectors shorter than this threshold are replaced by a stub vector."
+						>
+							<TextField
+								type="number"
+								label={"Epsilon"}
+								disabled={this.props.isLocked}
+								value={this.props.epsilon}
+								inputProps={{step: 0.1}}
+								onChange={event => this.props.setEpsilon(
+									Number(event.target.value) ||
+										this.props.epsilon
+								)}
+							/>
+						</Tooltip>
+
 					</div>
 				</Toolbar>
 			</AppBar>
