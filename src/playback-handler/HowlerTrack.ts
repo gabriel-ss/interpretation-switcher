@@ -41,7 +41,7 @@ class HowlerTrack implements Track {
 
 		});
 
-		this.name = path;
+		[, this.name] = path.match(/.*\/(.*)/) as string[];
 		this.currentPosition = 0;
 
 	}

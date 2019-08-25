@@ -33,9 +33,7 @@ class HTMLAudioElementTrack implements Track {
 	public constructor(path: string) {
 
 		this.audioElement = new Audio(path);
-		console.log(path);
-
-		this.name = path;
+		[, this.name] = path.match(/.*\/(.*)/) as string[];
 		this.currentPosition = 0;
 
 	}
