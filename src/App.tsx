@@ -220,14 +220,16 @@ export class App extends React.Component<{}, State> {
 		return (
 			<React.Fragment>
 				<div style={appStyle} className="App">
-					<TrackControllerList
-						trackList={this.state.trackList}
-						selectedTrack={this.state.selectedTrack}
-						isPlaying={this.state.isPlaying}
-						setTrackPosition={this.setTrackPosition}
-						setSelectedTrack={this.setSelectedTrack}
-						removeTrack={this.removeTrack}
-					/>
+					<div style={trackListStyle}>
+						<TrackControllerList
+							trackList={this.state.trackList}
+							selectedTrack={this.state.selectedTrack}
+							isPlaying={this.state.isPlaying}
+							setTrackPosition={this.setTrackPosition}
+							setSelectedTrack={this.setSelectedTrack}
+							removeTrack={this.removeTrack}
+						/>
+					</div>
 					<div style={playerBarStyle}>
 						<Fab
 							style={buttonStyle}
@@ -261,12 +263,22 @@ const appStyle = {
 
 	backgroundColor: "#eeeeee",
 	minHeight: "100vh",
+	color: "#FFFFFF",
+
+};
+
+const trackListStyle = {
+
+	position: "absolute" as any,
+	top: 0,
+	height: "calc(100vh - 120px)",
+	width: "100%",
+	overflowX: "hidden" as any,
+	overflowY: "auto" as any,
 	display: "flex",
-	flexDirection: "column" as any,
 	alignItems: "center",
 	justifyContent: "center",
 	fontSize: "calc(10px + 2vmin)",
-	color: "#FFFFFF",
 
 };
 
