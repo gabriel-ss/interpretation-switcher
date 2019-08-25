@@ -1,8 +1,7 @@
 import * as React from "react";
 import Track from "../playback-handler/Track";
-import {IconButton, Paper, Radio, Toolbar, Typography} from "@material-ui/core";
+import {IconButton, Paper, Radio, Toolbar, Typography, Slider} from "@material-ui/core";
 import {Close} from "@material-ui/icons";
-import Slider from "@material-ui/lab/Slider";
 
 
 interface Props {
@@ -41,7 +40,9 @@ class TrackController extends	React.Component<Props> {
 							value={(100 * currentPosition / duration) || 0}
 							aria-labelledby="label"
 							onChange={(_event, position) =>
-								this.props.setPosition(position * duration / 100)}
+								this.props.setPosition(
+									position as number * duration / 100
+								)}
 						/>
 					</div>
 					<IconButton onClick={() => this.props.removeTrack()}>

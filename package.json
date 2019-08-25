@@ -48,35 +48,34 @@
 		}
 	},
 	"dependencies": {
-		"@material-ui/core": "^3.9.3",
-		"@material-ui/icons": "^3.0.2",
-		"@material-ui/lab": "^3.0.0-alpha.30",
+		"@material-ui/core": "^4.3.3",
+		"@material-ui/icons": "^4.2.1",
 		"@types/electron-devtools-installer": "^2.0.2",
 		"@types/howler": "^2.1.1",
 		"@types/node": "^12.7.2",
-		"@types/react": "16.8.10",
-		"@types/react-dom": "16.8.3",
+		"@types/react": "^16.9.2",
+		"@types/react-dom": "^16.9.0",
 		"audio-decode": "^1.4.0",
 		"electron-compile": "^6.4.4",
 		"electron-devtools-installer": "^2.1.0",
 		"electron-squirrel-startup": "^1.0.0",
 		"howler": "^2.1.2",
-		"react": "^16.8.6",
-		"react-dom": "^16.8.6",
-		"react-hot-loader": "^3.0.0-beta.6",
+		"react": "^16.9.0",
+		"react-dom": "^16.9.0",
+		"react-hot-loader": "^4.12.11",
 		"tslib": "^1.4.0"
 	},
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "^1.13.0",
-		"@typescript-eslint/parser": "^1.13.0",
+		"@typescript-eslint/eslint-plugin": "^2.0.0",
+		"@typescript-eslint/parser": "^2.0.0",
 		"babel-plugin-transform-async-to-generator": "^6.24.1",
 		"babel-preset-env": "^1.7.0",
 		"babel-preset-react": "^6.24.1",
-		"electron": "^6.0.3",
+		"electron": "^6.0.4",
 		"electron-forge": "^5.2.4",
 		"electron-prebuilt-compile": "4.0.0",
-		"eslint": "^6.1.0",
+		"eslint": "^6.2.2",
 		"eslint-plugin-react": "^7.14.3",
-		"typescript": "3.4.1"
+		"typescript": "^3.5.3"
 	}
 }
