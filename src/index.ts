@@ -1,6 +1,6 @@
 import {app, BrowserWindow, ipcMain, dialog} from "electron";
 import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-installer";
-import {enableLiveReload} from "electron-compile";
+import {enableLiveReload, addBypassChecker} from "electron-compile";
 import soundAlign from "./track-aligner/trackAligner";
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -11,6 +11,8 @@ const isDevMode = process.execPath.match(/[\\/]electron/);
 
 if (isDevMode)
 	enableLiveReload({strategy: "react-hmr"});
+else
+	addBypassChecker(filePath => filePath.indexOf(app.getAppPath()) === -1);
 
 
 const createWindow = async(): Promise<void> => {
