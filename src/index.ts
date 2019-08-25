@@ -19,8 +19,8 @@ const createWindow = async(): Promise<void> => {
 
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
-		width: 800,
-		height: 600,
+		width: 960,
+		height: 640,
 	});
 
 	// and load the index.html of the app.
@@ -83,25 +83,42 @@ app.on("activate", () => {
 
 let masterTrack = "";
 
-ipcMain.on("trackAdd",
-	async(event, path, windowSize, windowOverlap, gamma, epsilon) => {
+ipcMain.on("trackAddition",
+	async(event, windowSize, windowOverlap, gamma, epsilon) => {
+
+		const [audioPath] = await dialog.showOpenDialog(mainWindow as any, {
+			properties: ["openFile"],
+			filters: [{name: "Audio Files", extensions: ["mp3", "wav"]}],
+		}) as string[] || [null];
+
+		if (!audioPath) return;
+
+		event.sender.send("fileSelect", audioPath);
 
 		if (!masterTrack) {
 
-			masterTrack = path;
-
+			masterTrack = audioPath;
 			console.log("master added");
 
 			return;
 
 		}
 
-		const alignment = await soundAlign(
-			masterTrack, path, windowSize, windowOverlap, gamma, epsilon
-		);
+		try {
 
-		event.sender.send("trackAligned", alignment);
-		console.log("trackAligned");
+			const alignmentData = await soundAlign(
+				masterTrack, audioPath, windowSize, windowOverlap, gamma, epsilon
+			);
+
+			event.sender.send("trackAlignment", alignmentData);
+
+			console.log("track aligned");
+
+		} catch (error) {
+
+			event.sender.send("alignmentFailure", error.message);
+
+		}
 
 	});
 

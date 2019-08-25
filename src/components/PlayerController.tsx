@@ -1,5 +1,5 @@
 import * as React from "react";
-import {AppBar, IconButton, Toolbar, TextField, Tooltip} from "@material-ui/core";
+import {AppBar, IconButton, Toolbar, TextField, Tooltip, InputAdornment} from "@material-ui/core";
 import {PlayArrow, Pause} from "@material-ui/icons";
 
 
@@ -40,6 +40,11 @@ class PlayerController extends React.Component<Props> {
 							<TextField
 								type="number"
 								label={"Window Size"}
+								InputProps={{
+									inputProps: {step: 50},
+									endAdornment:
+										<InputAdornment position="end">ms</InputAdornment>,
+								}}
 								disabled={this.props.isLocked}
 								value={this.props.windowSize}
 								onChange={event => this.props.setWindowSize(
@@ -55,6 +60,11 @@ class PlayerController extends React.Component<Props> {
 							<TextField
 								type="number"
 								label={"Window Overlap"}
+								InputProps={{
+									inputProps: {min: 0, max: 100},
+									endAdornment:
+										<InputAdornment position="end">%</InputAdornment>,
+								}}
 								disabled={this.props.isLocked}
 								value={this.props.windowOverlap}
 								onChange={event => this.props.setWindowOverlap(

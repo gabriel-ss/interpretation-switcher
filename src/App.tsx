@@ -2,11 +2,9 @@ import Track from "./playback-handler/Track";
 import TrackImplementation from "./playback-handler/HowlerTrack";
 import {PlayerController, TrackControllerList} from "./components";
 import * as React from "react";
-import {Fab} from "@material-ui/core";
-import {Add} from "@material-ui/icons";
+import {Fab, Snackbar, SnackbarContent, IconButton} from "@material-ui/core";
+import {Add, Close} from "@material-ui/icons";
 import {ipcRenderer} from "electron";
-const {dialog} = require("electron").remote.require("electron");
-const SAMPLE_RATE = 44100;
 
 
 interface State {
@@ -15,9 +13,14 @@ interface State {
 	selectedTrack: number;
 	isPlaying: boolean;
 	windowSize: number;
+	samplesPerWindow: number;
 	windowOverlap: number;
+	overlappingSamples: number;
+	sampleRate: number;
 	gamma: number;
 	epsilon: number;
+	notification: string;
+	displayNotification: boolean;
 
 }
 
@@ -27,23 +30,57 @@ export class App extends React.Component<{}, State> {
 		trackList: [] as Track[],
 		selectedTrack: 0,
 		isPlaying: false,
-		windowSize: 4096,
-		windowOverlap: 0,
+		windowSize: 200,
+		samplesPerWindow: 0,
+		windowOverlap: 50,
+		overlappingSamples: 0,
+		sampleRate: 0,
 		gamma: 0.1,
 		epsilon: 0.1,
+		notification: "",
+		displayNotification: false,
 	}
 
 
-	public constructor(props) {
+	public constructor(props: {}) {
 
 		super(props);
-		ipcRenderer.on("trackAligned", (_event, alignment) => {
+
+		ipcRenderer.on("fileSelect", (_event, path) => {
+
+			const track = new TrackImplementation(path);
+			const state: any = {trackList: [...this.state.trackList, track]};
+
+			this.setState(state);
+
+		});
+
+		ipcRenderer.on("trackAlignment", (_event, alignmentData) => {
+
+			const {
+				windowAlignment, sampleRate, samplesPerWindow, overlappingSamples,
+			} = alignmentData;
 
 			this.state.trackList[this.state.trackList.length - 1].alignment =
-				alignment.map((segment: Uint8Array) =>
+				windowAlignment.map((segment: Uint8Array) =>
 					new Uint32Array(segment.buffer));
 
+			this.setState({sampleRate, samplesPerWindow, overlappingSamples});
+
 			this.syncTracks();
+
+		});
+
+		ipcRenderer.on("alignmentFailure", (_event, error) => {
+
+			this.setState({
+				trackList: this.state.trackList.filter((_item, trackIndex) =>
+					trackIndex !== this.state.trackList.length - 1),
+				notification: error,
+				displayNotification: true,
+			});
+
+			setTimeout(() => this.setState({displayNotification: false}), 5000);
 
 		});
 
@@ -80,22 +117,9 @@ export class App extends React.Component<{}, State> {
 
 	private addTrack = (): void => {
 
-		const [path] = dialog.showOpenDialog({
-			properties: ["openFile"],
-			filters: [{name: "Audio Files", extensions: ["mp3", "wav"]}],
-		}) || [null];
-
-		if (!path) return;
-
 		const {windowSize, windowOverlap, gamma, epsilon} = this.state;
 
-		ipcRenderer.send(
-			"trackAdd", path, windowSize, windowOverlap, gamma, epsilon
-		);
-
-		const track = new TrackImplementation(path);
-
-		this.setState({trackList: [...this.state.trackList, track]});
+		ipcRenderer.send("trackAddition", windowSize, windowOverlap, gamma, epsilon);
 
 	}
 
@@ -150,9 +174,15 @@ export class App extends React.Component<{}, State> {
 	}
 
 
-	public syncTracks(trackNumber?: number): void {
+	private syncTracks(trackNumber?: number): void {
 
-		const {windowSize, windowOverlap, selectedTrack, trackList} = this.state;
+		const {
+			sampleRate,
+			samplesPerWindow,
+			overlappingSamples,
+			selectedTrack,
+			trackList,
+		} = this.state;
 
 		const referenceTrack = trackNumber || trackNumber === 0
 			? trackNumber : selectedTrack;
@@ -164,7 +194,7 @@ export class App extends React.Component<{}, State> {
 		const {currentPosition, alignment} = currentTrack;
 		// Evaluate the window where the current sample is
 		const currentWindow = Math.floor(
-			currentPosition * SAMPLE_RATE / (windowSize - windowOverlap)
+			currentPosition * sampleRate / (samplesPerWindow - overlappingSamples)
 		);
 
 		let referenceWindow: number;
@@ -195,8 +225,8 @@ export class App extends React.Component<{}, State> {
 				} else
 					alignedWindow = referenceWindow;
 
-				track.currentPosition =
-				alignedWindow * (windowSize - windowOverlap) / SAMPLE_RATE;
+				track.currentPosition = alignedWindow *
+					(samplesPerWindow - overlappingSamples) / sampleRate;
 
 			});
 
@@ -220,6 +250,23 @@ export class App extends React.Component<{}, State> {
 		return (
 			<React.Fragment>
 				<div style={appStyle} className="App">
+					<Snackbar
+						anchorOrigin={{vertical: "top", horizontal: "right"}}
+						open={this.state.displayNotification}
+					>
+						<SnackbarContent
+							action={
+								<IconButton
+									key={"close"}
+									color={"primary"}
+									onClick={() =>
+										this.setState({displayNotification: false})}
+								>
+									<Close/>
+								</IconButton>}
+							message={this.state.notification}
+						/>
+					</Snackbar>
 					<div style={trackListStyle}>
 						<TrackControllerList
 							trackList={this.state.trackList}
