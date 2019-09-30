@@ -33,9 +33,11 @@ class HowlerTrack implements Track {
 
 	public constructor(path: string) {
 
+		const URI = path.split("/").map(part => encodeURIComponent(part)).join("/");
+
 		this.howl = new Howl({
 
-			src: [path],
+			src: [URI],
 			autoplay: false,
 			loop: false,
 

@@ -32,7 +32,9 @@ class HTMLAudioElementTrack implements Track {
 
 	public constructor(path: string) {
 
-		this.audioElement = new Audio(path);
+		const URI = path.split("/").map(part => encodeURIComponent(part)).join("/");
+
+		this.audioElement = new Audio(URI);
 		[, this.name] = path.match(/.*\/(.*)/) as string[];
 		this.currentPosition = 0;
 
