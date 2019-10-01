@@ -2,7 +2,8 @@ import Track from "./playback-handler/Track";
 import TrackImplementation from "./playback-handler/HowlerTrack";
 import {PlayerController, TrackControllerList} from "./components";
 import * as React from "react";
-import {Fab, Snackbar, SnackbarContent, IconButton} from "@material-ui/core";
+import {Fab, Snackbar, SnackbarContent, IconButton, MuiThemeProvider, createMuiTheme} from "@material-ui/core";
+import {cyan} from "@material-ui/core/colors";
 import {Add, Close} from "@material-ui/icons";
 import {ipcRenderer} from "electron";
 
@@ -248,7 +249,7 @@ export class App extends React.Component<{}, State> {
 	public render(): JSX.Element {
 
 		return (
-			<React.Fragment>
+			<MuiThemeProvider theme={theme}>
 				<div style={appStyle} className="App">
 					<Snackbar
 						anchorOrigin={{vertical: "top", horizontal: "right"}}
@@ -299,16 +300,24 @@ export class App extends React.Component<{}, State> {
 						/>
 					</div>
 				</div>
-			</React.Fragment>
+			</MuiThemeProvider>
 		);
 
 	}
 
 }
 
+
+const theme = createMuiTheme({
+	palette: {
+		type: "dark",
+		primary: cyan,
+	},
+});
+
 const appStyle = {
 
-	backgroundColor: "#eeeeee",
+	backgroundColor: "#2d2d2d",
 	minHeight: "100vh",
 	color: "#FFFFFF",
 
@@ -326,6 +335,7 @@ const trackListStyle = {
 	alignItems: "center",
 	justifyContent: "center",
 	fontSize: "calc(10px + 2vmin)",
+	background: "url(./assets/background.svg) no-repeat center",
 
 };
 

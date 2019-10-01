@@ -19,8 +19,9 @@ const createWindow = async(): Promise<void> => {
 
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
-		width: 960,
-		height: 640,
+		width: 1100,
+		height: 700,
+		icon: `${__dirname}/assets/icon.png`,
 	});
 
 	// and load the index.html of the app.

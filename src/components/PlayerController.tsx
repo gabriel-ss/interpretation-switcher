@@ -24,7 +24,7 @@ class PlayerController extends React.Component<Props> {
 	public render(): JSX.Element {
 
 		return (
-			<AppBar style={style} color="default">
+			<AppBar style={controllerStyle} color="default">
 				<Toolbar>
 					<IconButton
 						style={{margin: "0 24px 0 0"}}
@@ -32,7 +32,7 @@ class PlayerController extends React.Component<Props> {
 					>
 						{this.props.isPlaying ? <Pause/> : <PlayArrow/>}
 					</IconButton>
-					<div style={{margin: "auto"}}>
+					<div style={inputPanelStyle}>
 						<Tooltip
 							enterDelay={1000}
 							title="The window size in samples"
@@ -40,6 +40,7 @@ class PlayerController extends React.Component<Props> {
 							<TextField
 								type="number"
 								label={"Window Size"}
+								style={inputStyle}
 								InputProps={{
 									inputProps: {step: 50},
 									endAdornment:
@@ -60,6 +61,7 @@ class PlayerController extends React.Component<Props> {
 							<TextField
 								type="number"
 								label={"Window Overlap"}
+								style={inputStyle}
 								InputProps={{
 									inputProps: {min: 0, max: 100},
 									endAdornment:
@@ -79,7 +81,8 @@ class PlayerController extends React.Component<Props> {
 						>
 							<TextField
 								type="number"
-								label={"Gamma"}
+								label={"Compression Factor"}
+								style={inputStyle}
 								disabled={this.props.isLocked}
 								value={this.props.gamma}
 								inputProps={{step: 0.1}}
@@ -95,7 +98,8 @@ class PlayerController extends React.Component<Props> {
 						>
 							<TextField
 								type="number"
-								label={"Epsilon"}
+								label={"Discard Threshold"}
+								style={inputStyle}
 								disabled={this.props.isLocked}
 								value={this.props.epsilon}
 								inputProps={{step: 0.1}}
@@ -116,10 +120,24 @@ class PlayerController extends React.Component<Props> {
 }
 
 
-const style = {
+const controllerStyle = {
 
 	position: "static" as any,
 
+};
+
+const inputPanelStyle = {
+
+	display: "flex",
+	flexFlow: "wrap",
+	justifyContent: "center",
+	width: "100%",
+
+};
+
+const inputStyle = {
+	width: "6em",
+	margin: "0 3em",
 };
 
 export default PlayerController;
