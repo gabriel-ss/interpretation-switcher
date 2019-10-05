@@ -2,6 +2,7 @@ import {app, BrowserWindow, ipcMain, dialog} from "electron";
 import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-installer";
 import {enableLiveReload, addBypassChecker} from "electron-compile";
 import soundAlign from "./track-aligner/trackAligner";
+import decode from "./track-aligner/decoder";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -82,7 +83,7 @@ app.on("activate", () => {
 // code. You can also put them in separate files and import them here.
 
 
-let masterTrack = "";
+let masterTrack: AudioBuffer | null = null;
 
 ipcMain.on("trackAddition",
 	async(event, windowSize, windowOverlap, gamma, epsilon) => {
@@ -98,8 +99,8 @@ ipcMain.on("trackAddition",
 
 		if (!masterTrack) {
 
-			masterTrack = audioPath;
-			console.log("master added");
+			masterTrack = await decode(audioPath);
+			event.sender.send("masterAddition", masterTrack.sampleRate);
 
 			return;
 
@@ -107,13 +108,13 @@ ipcMain.on("trackAddition",
 
 		try {
 
-			const alignmentData = await soundAlign(
-				masterTrack, audioPath, windowSize, windowOverlap, gamma, epsilon
+			const newTrack = await decode(audioPath);
+			const alignmentData = soundAlign(
+				masterTrack, newTrack, windowSize, windowOverlap, gamma, epsilon
 			);
 
 			event.sender.send("trackAlignment", alignmentData);
 
-			console.log("track aligned");
 
 		} catch (error) {
 
@@ -123,4 +124,4 @@ ipcMain.on("trackAddition",
 
 	});
 
-ipcMain.on("masterTrackReset", () => (masterTrack = ""));
+ipcMain.on("masterTrackReset", () => (masterTrack = null));
