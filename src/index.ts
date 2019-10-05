@@ -96,7 +96,13 @@ ipcMain.on("trackAddition",
 			filters: [{name: "Audio Files", extensions: ["mp3", "wav"]}],
 		}) as unknown as string[] || [null];
 
-		if (!audioPath) return;
+		if (!audioPath) {
+
+			event.sender.send("selectionCancelation");
+
+			return;
+
+		}
 
 		event.sender.send("fileSelect", audioPath);
 

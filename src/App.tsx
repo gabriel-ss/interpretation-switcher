@@ -58,6 +58,12 @@ export class App extends React.Component<{}, State> {
 
 		});
 
+		ipcRenderer.on("selectionCancelation", () => {
+
+			this.setState({isLoadingTrack: false});
+
+		});
+
 		ipcRenderer.on("masterAddition", (_event, sampleRate) => {
 
 			this.setState({sampleRate,	isLoadingTrack: false});
