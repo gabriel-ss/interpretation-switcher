@@ -33,7 +33,7 @@ const createWindow = async(): Promise<void> => {
 		await installExtension(REACT_DEVELOPER_TOOLS);
 		mainWindow.webContents.once("dom-ready", () => {
 
-			mainWindow.webContents.openDevTools();
+			(mainWindow as Electron.BrowserWindow).webContents.openDevTools();
 
 		});
 
@@ -90,7 +90,7 @@ ipcMain.on("trackAddition",
 		const [audioPath] = await dialog.showOpenDialog(mainWindow as any, {
 			properties: ["openFile"],
 			filters: [{name: "Audio Files", extensions: ["mp3", "wav"]}],
-		}) as string[] || [null];
+		}) as unknown as string[] || [null];
 
 		if (!audioPath) return;
 

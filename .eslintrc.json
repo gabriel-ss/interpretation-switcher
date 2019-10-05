@@ -76,7 +76,7 @@
 			"ignoreStrings": true,
 			"ignoreTemplateLiterals": true
 		 }],
-		"max-lines": "error",
+		"max-lines": ["error", {"skipBlankLines": true}],
 		"max-nested-callbacks": "error",
 		"max-statements-per-line": "error",
 		"new-cap": "warn",
@@ -120,11 +120,6 @@
 		"no-extra-bind": "error",
 		"no-extra-boolean-cast": "error",
 		"no-extra-label": "error",
-		"no-extra-parens": ["error", "all", {
-			"returnAssign": false,
-			"nestedBinaryExpressions": false,
-			"enforceForArrowConditionals": false
-		 }],
 		"no-extra-semi": "error",
 		"no-fallthrough": "error",
 		"no-floating-decimal": "error",
@@ -277,6 +272,12 @@
 		"no-array-constructor": "off",
 		"@typescript-eslint/no-array-constructor": "error",
 		"@typescript-eslint/no-empty-interface": "error",
+		"no-extra-parens": "off",
+		"@typescript-eslint/no-extra-parens": ["error", "all", {
+			"returnAssign": false,
+			"nestedBinaryExpressions": false,
+			"enforceForArrowConditionals": false
+		 }],
 		"@typescript-eslint/no-explicit-any": "off",
 		"@typescript-eslint/no-inferrable-types": "warn",
 		"@typescript-eslint/no-misused-new": "error",

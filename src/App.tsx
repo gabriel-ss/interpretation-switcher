@@ -2,7 +2,7 @@ import Track from "./playback-handler/Track";
 import TrackImplementation from "./playback-handler/HowlerTrack";
 import {PlayerController, TrackControllerList} from "./components";
 import * as React from "react";
-import {Fab, Snackbar, SnackbarContent, IconButton, MuiThemeProvider, createMuiTheme} from "@material-ui/core";
+import {Modal, Typography, Fab, Snackbar, SnackbarContent, IconButton, MuiThemeProvider, createMuiTheme} from "@material-ui/core";
 import {cyan} from "@material-ui/core/colors";
 import {Add, Close} from "@material-ui/icons";
 import {ipcRenderer} from "electron";
@@ -13,6 +13,7 @@ interface State {
 	trackList: Track[];
 	selectedTrack: number;
 	isPlaying: boolean;
+	isLoadingTrack: boolean;
 	windowSize: number;
 	samplesPerWindow: number;
 	windowOverlap: number;
@@ -31,6 +32,7 @@ export class App extends React.Component<{}, State> {
 		trackList: [] as Track[],
 		selectedTrack: 0,
 		isPlaying: false,
+		isLoadingTrack: false,
 		windowSize: 200,
 		samplesPerWindow: 0,
 		windowOverlap: 50,
@@ -56,17 +58,29 @@ export class App extends React.Component<{}, State> {
 
 		});
 
+		ipcRenderer.on("masterAddition", (_event, sampleRate) => {
+
+			this.setState({sampleRate,	isLoadingTrack: false});
+
+			this.syncTracks();
+
+		});
+
 		ipcRenderer.on("trackAlignment", (_event, alignmentData) => {
 
 			const {
-				windowAlignment, sampleRate, samplesPerWindow, overlappingSamples,
+				windowAlignment, samplesPerWindow, overlappingSamples,
 			} = alignmentData;
 
 			this.state.trackList[this.state.trackList.length - 1].alignment =
 				windowAlignment.map((segment: Uint8Array) =>
 					new Uint32Array(segment.buffer));
 
-			this.setState({sampleRate, samplesPerWindow, overlappingSamples});
+			this.setState({
+				samplesPerWindow,
+				overlappingSamples,
+				isLoadingTrack: false,
+			});
 
 			this.syncTracks();
 
@@ -79,6 +93,7 @@ export class App extends React.Component<{}, State> {
 					trackIndex !== this.state.trackList.length - 1),
 				notification: error,
 				displayNotification: true,
+				isLoadingTrack: false,
 			});
 
 			setTimeout(() => this.setState({displayNotification: false}), 5000);
@@ -119,6 +134,8 @@ export class App extends React.Component<{}, State> {
 	private addTrack = (): void => {
 
 		const {windowSize, windowOverlap, gamma, epsilon} = this.state;
+
+		this.setState({isLoadingTrack: true});
 
 		ipcRenderer.send("trackAddition", windowSize, windowOverlap, gamma, epsilon);
 
@@ -233,16 +250,16 @@ export class App extends React.Component<{}, State> {
 
 	}
 
-	public setWindowSize = (windowSize: number) =>
+	public setWindowSize = (windowSize: number): void =>
 		this.setState({windowSize})
 
-	public setWindowOverlap = (windowOverlap: number) =>
+	public setWindowOverlap = (windowOverlap: number): void =>
 		this.setState({windowOverlap})
 
-	public setGamma = (gamma: number) =>
+	public setGamma = (gamma: number): void =>
 		this.setState({gamma})
 
-	public setEpsilon = (epsilon: number) =>
+	public setEpsilon = (epsilon: number): void =>
 		this.setState({epsilon})
 
 
@@ -298,6 +315,14 @@ export class App extends React.Component<{}, State> {
 							setGamma={this.setGamma}
 							setEpsilon={this.setEpsilon}
 						/>
+						<Modal open={this.state.isLoadingTrack}>
+							<Typography
+								align={"center"}
+								color={"primary"}
+								style={modalStyle}
+								variant={"h2"}
+							>Loading Track</Typography>
+						</Modal>
 					</div>
 				</div>
 			</MuiThemeProvider>
@@ -320,6 +345,15 @@ const appStyle = {
 	backgroundColor: "#2d2d2d",
 	minHeight: "100vh",
 	color: "#FFFFFF",
+
+};
+
+const modalStyle = {
+
+	position: "absolute" as any,
+	outline: "none",
+	width: "100%",
+	top: "50%",
 
 };
 
