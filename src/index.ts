@@ -22,8 +22,11 @@ const createWindow = async(): Promise<void> => {
 	mainWindow = new BrowserWindow({
 		width: 1100,
 		height: 700,
+		title: "Interpretation Switcher",
 		icon: `${__dirname}/assets/icon.png`,
 	});
+
+	mainWindow.setMenu(null);
 
 	// and load the index.html of the app.
 	mainWindow.loadURL(`file://${__dirname}/index.html`);
