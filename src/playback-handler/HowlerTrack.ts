@@ -1,6 +1,6 @@
 import {Howl} from "howler";
 import Track from "./Track";
-
+import {sep, basename} from "path";
 
 /**
  * Track implementation using the Howler.js lib
@@ -33,7 +33,8 @@ class HowlerTrack implements Track {
 
 	public constructor(path: string) {
 
-		const URI = path.split("/").map(part => encodeURIComponent(part)).join("/");
+		const URI =
+			path.split(sep).map(part => encodeURIComponent(part)).join(sep);
 
 		this.howl = new Howl({
 
@@ -43,7 +44,7 @@ class HowlerTrack implements Track {
 
 		});
 
-		[, this.name] = path.match(/.*\/(.*)/) as string[];
+		this.name = basename(path);
 		this.currentPosition = 0;
 
 	}

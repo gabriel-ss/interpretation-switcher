@@ -1,4 +1,5 @@
 import Track from "./Track";
+import {sep, basename} from "path";
 
 
 /**
@@ -32,10 +33,11 @@ class HTMLAudioElementTrack implements Track {
 
 	public constructor(path: string) {
 
-		const URI = path.split("/").map(part => encodeURIComponent(part)).join("/");
+		const URI =
+			path.split(sep).map(part => encodeURIComponent(part)).join(sep);
 
 		this.audioElement = new Audio(URI);
-		[, this.name] = path.match(/.*\/(.*)/) as string[];
+		this.name = basename(path);
 		this.currentPosition = 0;
 
 	}
