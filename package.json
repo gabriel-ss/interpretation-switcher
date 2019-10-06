@@ -31,7 +31,7 @@
 			},
 			"electronPackagerConfig": {
 				"packageManager": "npm",
-				"icon": "src/assets/icon.svg"
+				"icon": "src/assets/icon.ico"
 			},
 			"electronWinstallerConfig": {
 				"name": "interpretation-switcher"
